@@ -18,6 +18,17 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.25.3/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
+## Java JMS Application for Wildfly (helloworld-mdb)
+
+```bash
+git clone https://github.com/wildfly/quickstart.git
+```
+
+```bash
+cd wildfly/helloworld-mdb/
+```
+
+
 ## Download Elastic for Docker
 
 ```bash
