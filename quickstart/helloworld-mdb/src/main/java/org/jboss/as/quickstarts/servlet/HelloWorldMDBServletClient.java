@@ -17,7 +17,11 @@
 package org.jboss.as.quickstarts.servlet;
 
 
+import org.jboss.as.quickstarts.ApplicationProperties;
+import org.jboss.as.quickstarts.ApplicationPropertiesConfigurationDirectory;
+
 import java.io.IOException;
+
 import java.io.PrintWriter;
 import java.util.logging.Logger;
 
@@ -72,7 +76,7 @@ public class HelloWorldMDBServletClient extends HttpServlet {
 
     private static final long serialVersionUID = -8314035702649252239L;
 
-    private static final int MSG_COUNT = 5;
+    private static final int MSG_COUNT = 10;
 
 
     private static final Logger LOGGER = Logger.getLogger(HelloWorldMDBServletClient.class.toString());
@@ -97,15 +101,30 @@ public class HelloWorldMDBServletClient extends HttpServlet {
 
             out.write("<p>Sending messages to <em>" + destination + "</em></p>");
             out.write("<h2>The following messages will be sent to the destination:</h2>");
+
+            String text=null;
+            try{
+                text = ApplicationProperties.INSTANCE.getMessageText();
+                if(text==null){
+                    text= ApplicationPropertiesConfigurationDirectory.INSTANCE.getMessageText();
+                }
+            }
+            catch(Exception e){
+                text= ApplicationPropertiesConfigurationDirectory.INSTANCE.getMessageText();
+            }
             for (int i = 0; i < MSG_COUNT; i++) {
-                String text = "This is message " + (i + 1);
-                context.createProducer().send(destination, text);
-                out.write("Message (" + i + "): " + text + "</br>");
+                double casuale = (int)(Math.random()*10);
+                if(casuale%2==0){
+                    out.write("Error: Message (" + (i+1) + ") NOT SENT"+ "</br>");
+                    LOGGER.severe("Error: Packet not sent");
+                    continue;
+                }
+                context.createProducer().send(destination, text+" "+ (i + 1));
+                out.write("Message (" + (i+1) + "): " + text+" "+ (i + 1) + "</br>");
                 LOGGER.info("Message: <"+text+ "> sent to queue: " + destination.toString());
             }
-
-
             out.write("<p><i>Go to your JBoss EAP server console or server log to see the result of messages processing.</i></p>");
+
         } finally {
             if (out != null) {
                 out.close();
@@ -116,4 +135,5 @@ public class HelloWorldMDBServletClient extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doGet(req, resp);
     }
+
 }
