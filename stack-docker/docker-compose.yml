@@ -78,8 +78,6 @@ services:
         target: /usr/share/logstash/config/logstash.keystore
       - source: ca.crt
         target: /usr/share/logstash/config/certs/ca/ca.crt
-    ports:
-      - "5044:5044"
     networks: ['stack']
     depends_on: ['elasticsearch']
     healthcheck:
@@ -123,7 +121,7 @@ secrets:
   logstash.keystore:
     file: ./config/logstash/logstash.keystore
   logstash.conf:
-    file: ./config/logstash/pipeline/added.conf
+    file: ./config/logstash/pipeline/logstash.conf
   elasticsearch.yml:
     file: ./config/elasticsearch/elasticsearch.yml
   elasticsearch.keystore:

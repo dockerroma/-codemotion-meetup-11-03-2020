@@ -1,31 +1,12 @@
-filebeat.config:
-  prospectors:
-    path: ${path.config}/prospectors.d/*.yml
-    reload.enabled: false
-  modules:
-    path: ${path.config}/modules.d/*.yml
-    reload.enabled: false
-
 filebeat.inputs:
 - type: log
   enabled: true
   paths:
     - /mnt/log/*.log
 
-processors:
-- add_cloud_metadata:
-
 output.logstash:
-  hosts: ['logstash:5044']
+  hosts: ["logstash:5044"]
 
-  #output.elasticsearch:
-  #  hosts: ['elasticsearch:9200']
-  protocol: "https"
-  username: elastic
-#  # Read PW from filebeat.keystore
-  password: "${ELASTIC_PASSWORD}"
-  ssl.certificate_authorities: ["/usr/share/filebeat/certs/ca/ca.crt"]
-  
 setup.kibana:
   host: "http://kibana:5601"
   username: elastic
@@ -33,5 +14,4 @@ setup.kibana:
   protocol: "http"
   ssl.enabled: false
   ssl.certificate_authorities: ["/usr/share/filebeat/certs/ca/ca.crt"]
-
-xpack.monitoring.enabled: true
+ 
