@@ -17,8 +17,8 @@ public enum ApplicationPropertiesConfigurationDirectory {
         try {
         FileInputStream fis = new FileInputStream(fileName);
             properties.load(fis);
-        } catch (IOException e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, e.getMessage(), e);
+        } catch (Exception e) {
+            Logger.getLogger(getClass().getName()).log(Level.WARNING, e.getMessage(), e);
         }
     }
 
