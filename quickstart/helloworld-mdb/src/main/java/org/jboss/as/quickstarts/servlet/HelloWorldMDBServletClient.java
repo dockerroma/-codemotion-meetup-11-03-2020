@@ -104,13 +104,13 @@ public class HelloWorldMDBServletClient extends HttpServlet {
 
             String text=null;
             try{
-                text = ApplicationProperties.INSTANCE.getMessageText();
+                text = ApplicationPropertiesConfigurationDirectory.INSTANCE.getMessageText();
                 if(text==null){
-                    text= ApplicationPropertiesConfigurationDirectory.INSTANCE.getMessageText();
+                    text = ApplicationProperties.INSTANCE.getMessageText();
                 }
             }
             catch(Exception e){
-                text= ApplicationPropertiesConfigurationDirectory.INSTANCE.getMessageText();
+                text= ApplicationProperties.INSTANCE.getMessageText();
             }
             for (int i = 0; i < MSG_COUNT; i++) {
                 double casuale = (int)(Math.random()*10);
