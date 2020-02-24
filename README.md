@@ -46,6 +46,9 @@ cd stack-docker
 /usr/local/bin/docker-compose -f setup.yml up
 ```
 
+this command will initialize containers and create the elastic password (username is "elastic").
+For further details see instructions [here](https://github.com/elastic/stack-docker).
+
 ## Start ElasticStack
 
 ```bash
