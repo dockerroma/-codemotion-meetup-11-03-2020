@@ -8,13 +8,14 @@ services:
     command: chmod 777 /opt/jboss/wildfly/standalone/log
 
   wildfly:
-    image: 'jboss/wildfly:latest'
+    build:
+      context: ./quickstart
+      dockerfile: Dockerfile
     ports:
       - '8080:8080'
       - '9990:9990'
     volumes:
       - 'wildfly_log:/opt/jboss/wildfly/standalone/log'
-      - './helloworld-mdb.war:/opt/jboss/wildfly/standalone/deployments/helloworld-mdb.war'
     command: /opt/jboss/wildfly/bin/standalone.sh --server-config=standalone-full-ha.xml -b 0.0.0.0 -bmanagement 0.0.0.0
     depends_on: ['permission']
 
@@ -32,6 +33,7 @@ services:
         target: /usr/share/filebeat/filebeat.keystore
       - source: ca.crt
         target: /usr/share/filebeat/certs/ca/ca.crt
+    depends_on: ['wildfly']
     volumes:
       - 'wildfly_log:/mnt/log:ro'
     healthcheck:
