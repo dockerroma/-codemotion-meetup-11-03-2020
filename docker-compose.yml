@@ -16,6 +16,7 @@ services:
       - '9990:9990'
     volumes:
       - 'wildfly_log:/opt/jboss/wildfly/standalone/log'
+      - '${PWD}/my.properties:/opt/jboss/wildfly/standalone/configuration/my.properties'
     command: /opt/jboss/wildfly/bin/standalone.sh --server-config=standalone-full-ha.xml -b 0.0.0.0 -bmanagement 0.0.0.0
     depends_on: ['permission']
 
