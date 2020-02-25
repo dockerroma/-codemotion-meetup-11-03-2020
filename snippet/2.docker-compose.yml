@@ -1,0 +1,55 @@
+version: '3.1'
+services:
+
+  wildfly:
+    build:
+      context: ./quickstart
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+      - '9990:9990'
+    volumes:
+      - 'wildfly_log:/opt/jboss/wildfly/standalone/log'
+      - '${PWD}/my.properties:/opt/jboss/wildfly/standalone/configuration/my.properties:ro'
+    command: /opt/jboss/wildfly/bin/standalone.sh --server-config=standalone-full-ha.xml -b 0.0.0.0 -bmanagement 0.0.0.0
+    depends_on: ['permission']
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:${TAG}
+    command: --strict.perms=false -e  # -e flag to log to stderr and disable syslog/file output
+    # If the host system has logs at "/var/log", mount them at "/mnt/log"
+    # inside the container, where Filebeat can find them.
+    # volumes: ['/var/log:/mnt/log:ro']
+    restart: always
+    secrets:
+      - source: filebeat.yml
+        target: /usr/share/filebeat/filebeat.yml
+      - source: filebeat.keystore
+        target: /usr/share/filebeat/filebeat.keystore
+      - source: ca.crt
+        target: /usr/share/filebeat/certs/ca/ca.crt
+    depends_on: ['wildfly']
+    volumes:
+      - 'wildfly_log:/mnt/log:ro'
+    healthcheck:
+      test: filebeat test config
+      interval: 30s
+      timeout: 15s
+      retries: 5
+
+networks:
+  default:
+    external:
+      name: stack-docker_stack
+
+secrets:
+  ca.crt:
+    file: ./stack-docker/config/ssl/ca/ca.crt
+  filebeat.yml:
+    file: ./stack-docker/config/filebeat/filebeat.yml
+  filebeat.keystore:
+    file: ./stack-docker/config/filebeat/filebeat.keystore
+
+volumes:
+  wildfly_log:
+    driver: local
