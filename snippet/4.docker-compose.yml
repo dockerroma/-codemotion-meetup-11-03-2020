@@ -1,0 +1,11 @@
+version: '3.1'
+services:
+
+  wildfly:
+    image: jboss-application
+    ports:
+      - '8080:8080'
+      - '9990:9990'
+    volumes:
+      - '${PWD}/my.properties:/opt/jboss/wildfly/standalone/configuration/my.properties:ro'
+    command: /opt/jboss/wildfly/bin/standalone.sh --server-config=configuration.xml -b 0.0.0.0 -bmanagement 0.0.0.0

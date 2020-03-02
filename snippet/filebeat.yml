@@ -1,0 +1,17 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /mnt/log/*.log
+
+output.logstash:
+  hosts: ["logstash:5044"]
+
+setup.kibana:
+  host: "http://kibana:5601"
+  username: elastic
+  password: "${ELASTIC_PASSWORD}"
+  protocol: "http"
+  ssl.enabled: false
+  ssl.certificate_authorities: ["/usr/share/filebeat/certs/ca/ca.crt"]
+ 
