@@ -1,4 +1,12 @@
 version: '3.1'
+
+#-------------------------------
+# Volume Shared between JBoss/Filebeat/Busybox
+#-------------------------------
+volumes:
+  wildfly_log:
+    driver: local
+
 services:
 
   #-------------------------------
@@ -8,21 +16,12 @@ services:
     image: jboss-application
     ports:
       - '8080:8080'
-      - '9990:9990'
     volumes:
       - 'wildfly_log:/opt/jboss/wildfly/standalone/log'
-      - '${PWD}/my.properties:/opt/jboss/wildfly/standalone/configuration/my.properties:ro'
-    command: /opt/jboss/wildfly/bin/standalone.sh --server-config=standalone-full-ha.xml -b 0.0.0.0 -bmanagement 0.0.0.0
+      - './configuration.xml:/opt/jboss/wildfly/standalone/configuration/configuration.xml:ro'
+      - './my.properties:/opt/jboss/wildfly/standalone/configuration/my.properties:ro'
+    command: /opt/jboss/wildfly/bin/standalone.sh --server-config=configuration.xml -b 0.0.0.0 -bmanagement 0.0.0.0
     depends_on: ['permission']
-
-  #-------------------------------
-  # Open JBoss log directory to everybody
-  #-------------------------------
-  permission:
-    image: 'busybox'    
-    volumes:
-      - 'wildfly_log:/opt/jboss/wildfly/standalone/log'
-    command: chmod 777 /opt/jboss/wildfly/standalone/log
 
   #-------------------------------
   # Filebeat send all logs to Elastic
@@ -37,10 +36,6 @@ services:
     secrets:
       - source: filebeat.yml
         target: /usr/share/filebeat/filebeat.yml
-#      - source: filebeat.keystore
-#        target: /usr/share/filebeat/filebeat.keystore
-#      - source: ca.crt
-#        target: /usr/share/filebeat/certs/ca/ca.crt
     depends_on: ['wildfly']
     volumes:
       - 'wildfly_log:/mnt/log:ro'
@@ -49,6 +44,15 @@ services:
       interval: 30s
       timeout: 15s
       retries: 5
+
+  #-------------------------------
+  # Open JBoss log directory to everybody
+  #-------------------------------
+  permission:
+    image: 'busybox'    
+    volumes:
+      - 'wildfly_log:/opt/jboss/wildfly/standalone/log'
+    command: chmod 777 /opt/jboss/wildfly/standalone/log
 
 #-------------------------------
 # Link default network to the network
@@ -60,16 +64,6 @@ networks:
       name: stack-docker_stack
 
 secrets:
-#  ca.crt:
-#    file: ./stack-docker/config/ssl/ca/ca.crt
   filebeat.yml:
     file: ./filebeat.yml
-#  filebeat.keystore:
-#    file: ./stack-docker/config/filebeat/filebeat.keystore
 
-#-------------------------------
-# Volume Shared between JBoss/Filebeat/Busybox
-#-------------------------------
-volumes:
-  wildfly_log:
-    driver: local

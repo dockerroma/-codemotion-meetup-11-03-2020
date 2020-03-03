@@ -5,7 +5,7 @@ services:
     image: jboss-application
     ports:
       - '8080:8080'
-      - '9990:9990'
     volumes:
-      - '${PWD}/my.properties:/opt/jboss/wildfly/standalone/configuration/my.properties:ro'
-    command: /opt/jboss/wildfly/bin/standalone.sh --server-config=configuration.xml -b 0.0.0.0 -bmanagement 0.0.0.0
+      - './configuration.xml:/opt/jboss/wildfly/standalone/configuration/configuration.xml:ro'
+      - './my.properties:/opt/jboss/wildfly/standalone/configuration/my.properties:ro'
+    command: /opt/jboss/wildfly/bin/standalone.sh --server-config=configuration.xml -b 0.0.0.0
